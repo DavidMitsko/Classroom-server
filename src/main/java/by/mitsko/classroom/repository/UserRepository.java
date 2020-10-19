@@ -1,5 +1,6 @@
 package by.mitsko.classroom.repository;
 
+import by.mitsko.classroom.entity.Role;
 import by.mitsko.classroom.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,5 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User getById(Long id);
 
-    List<User> getAllByAuthorizedIsTrueOrderByIdAsc();
+    List<User> getAllByRoleAndAuthorizedIsTrueOrderByIdAsc(Role role);
+
+    List<User> getAllByRole(Role role);
 }

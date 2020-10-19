@@ -9,11 +9,15 @@ public class UserResponseDTO {
     private String username;
     private boolean authorized;
     private boolean raisedHand;
+    private String role;
+    private String email;
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.authorized = user.isAuthorized();
         this.raisedHand = user.isRaisedHand();
+        this.role = user.getRole().name();
+        this.email = user.getEmail();
     }
 }

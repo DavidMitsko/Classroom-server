@@ -1,0 +1,11 @@
+package by.mitsko.classroom.repository;
+
+import by.mitsko.classroom.entity.Log;
+import by.mitsko.classroom.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface LogRepository extends JpaRepository<Log, Long> {
+    List<Log> getAllByUser(User student);
+}

@@ -1,7 +1,11 @@
 package by.mitsko.classroom.service.impl;
 
+import by.mitsko.classroom.entity.Action;
+import by.mitsko.classroom.entity.Log;
+import by.mitsko.classroom.entity.Role;
 import by.mitsko.classroom.entity.User;
 import by.mitsko.classroom.exception.AccessDeniedException;
+import by.mitsko.classroom.repository.LogRepository;
 import by.mitsko.classroom.repository.UserRepository;
 import by.mitsko.classroom.service.UserService;
 import by.mitsko.classroom.service.util.Validator;
@@ -13,15 +17,16 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-
+    private final LogRepository logRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, LogRepository logRepository) {
         this.userRepository = userRepository;
+        this.logRepository = logRepository;
     }
 
     @Override
-    public User signIn(String username) {
+    public User signIn(String username, Role role, String email) {
         Validator.validateUsername(username);
 
         User user = userRepository.getByUsername(username);;
@@ -33,9 +38,19 @@ public class UserServiceImpl implements UserService {
                 user.setRaisedHand(false);
             }
         } else {
-            user = new User(username);
+            if (role == Role.STUDENT) {
+                user = new User(username, role);
+            }
+            if (role == Role.TEACHER) {
+                user = new User(username, email, role);
+            }
         }
-        save(user);
+
+        saveUser(user);
+        if (user.getRole() == Role.STUDENT) {
+            saveLog(new Log(Action.SIGN_IN, user));
+        }
+
         return user;
     }
 
@@ -44,9 +59,16 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getById(userId);
         Validator.validateAuthorizedUser(user);
 
+        if (user.getRole() == Role.STUDENT) {
+            if(user.isRaisedHand()) {
+                saveLog(new Log(Action.HAND_DOWN, user));
+            }
+            saveLog(new Log(Action.SIGN_OUT, user));
+        }
+
         user.setAuthorized(false);
         user.setRaisedHand(false);
-        save(user);
+        saveUser(user);
     }
 
     @Override
@@ -55,16 +77,39 @@ public class UserServiceImpl implements UserService {
         Validator.validateAuthorizedUser(user);
 
         user.setRaisedHand(!user.isRaisedHand());
-        save(user);
+        saveUser(user);
+
+        if (user.isRaisedHand()) {
+            saveLog(new Log(Action.HAND_UP, user));
+        } else {
+            saveLog(new Log(Action.HAND_DOWN, user));
+        }
+
         return user;
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.getAllByAuthorizedIsTrueOrderByIdAsc();
+    public List<User> getAllStudents() {
+        return userRepository.getAllByRole(Role.STUDENT);
     }
 
-    private void save(User user) {
+    @Override
+    public List<User> getAuthorizedStudents() {
+        return userRepository.getAllByRoleAndAuthorizedIsTrueOrderByIdAsc(Role.STUDENT);
+    }
+
+    @Override
+    public List<Log> getAllStudentsLogs(Long studentId) {
+        User student = userRepository.getById(studentId);
+
+        return logRepository.getAllByUser(student);
+    }
+
+    private void saveUser(User user) {
         userRepository.save(user);
+    }
+
+    private void saveLog(Log log) {
+        logRepository.save(log);
     }
 }

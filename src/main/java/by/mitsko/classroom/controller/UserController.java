@@ -2,7 +2,9 @@ package by.mitsko.classroom.controller;
 
 import by.mitsko.classroom.controller.utils.Converter;
 import by.mitsko.classroom.dto.request.UserAuthenticationRequestDTO;
+import by.mitsko.classroom.dto.response.LogResponseDTO;
 import by.mitsko.classroom.dto.response.UserResponseDTO;
+import by.mitsko.classroom.entity.Role;
 import by.mitsko.classroom.entity.User;
 import by.mitsko.classroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ public class UserController {
 
     @PostMapping("signIn")
     public ResponseEntity<?> signIn(@RequestBody UserAuthenticationRequestDTO requestDTO) {
-        User user = userService.signIn(requestDTO.getUsername());
+        User user = userService.signIn(requestDTO.getUsername(), Role.valueOf(requestDTO.getRole()), requestDTO.getEmail());
         UserResponseDTO response = new UserResponseDTO(user);
 
         sendMessage();
@@ -53,19 +55,32 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/getAllUsers")
+    @GetMapping("getAllStudents")
     public ResponseEntity<?> getAllUsers() {
-        List<UserResponseDTO> users = Converter.convertUserToUserResponse(userService.getAllUsers());
+        List<UserResponseDTO> users = Converter.convertUserToUserResponse(userService.getAllStudents());
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("getAuthorizedStudents")
+    public ResponseEntity<?> getAuthorizedUsers() {
+        List<UserResponseDTO> users = Converter.convertUserToUserResponse(userService.getAuthorizedStudents());
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("getAllStudentsLogs")
+    public ResponseEntity<?> getAllLogs(@RequestParam Long studentId) {
+        List<LogResponseDTO> logs = Converter.convertLogToLogResponse(userService.getAllStudentsLogs(studentId));
+        return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 
     @MessageMapping("/updateAllUsers")
     @SendTo("/topic/members")
     public List<UserResponseDTO> updateAllUsers() {
-        return Converter.convertUserToUserResponse(userService.getAllUsers());
+        return Converter.convertUserToUserResponse(userService.getAuthorizedStudents());
     }
 
     private void sendMessage() {
-        template.convertAndSend("/topic/members", Converter.convertUserToUserResponse(userService.getAllUsers()));
+        template.convertAndSend("/topic/members",
+                Converter.convertUserToUserResponse(userService.getAuthorizedStudents()));
     }
 }
