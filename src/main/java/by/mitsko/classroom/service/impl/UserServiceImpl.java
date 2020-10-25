@@ -1,12 +1,11 @@
 package by.mitsko.classroom.service.impl;
 
-import by.mitsko.classroom.entity.Action;
-import by.mitsko.classroom.entity.Log;
-import by.mitsko.classroom.entity.Role;
-import by.mitsko.classroom.entity.User;
+import by.mitsko.classroom.entity.*;
 import by.mitsko.classroom.exception.AccessDeniedException;
 import by.mitsko.classroom.repository.LogRepository;
+import by.mitsko.classroom.repository.ReportRepository;
 import by.mitsko.classroom.repository.UserRepository;
+import by.mitsko.classroom.service.LogService;
 import by.mitsko.classroom.service.UserService;
 import by.mitsko.classroom.service.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,15 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final LogRepository logRepository;
+    private final LogService logService;
+    private final ReportRepository reportRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, LogRepository logRepository) {
+    public UserServiceImpl(UserRepository userRepository, LogService logService,
+                           ReportRepository reportRepository) {
         this.userRepository = userRepository;
-        this.logRepository = logRepository;
+        this.logService = logService;
+        this.reportRepository = reportRepository;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
         saveUser(user);
         if (user.getRole() == Role.STUDENT) {
-            saveLog(new Log(Action.SIGN_IN, user));
+            logService.add(Action.SIGN_IN, user);
         }
 
         return user;
@@ -61,9 +63,9 @@ public class UserServiceImpl implements UserService {
 
         if (user.getRole() == Role.STUDENT) {
             if(user.isRaisedHand()) {
-                saveLog(new Log(Action.HAND_DOWN, user));
+                logService.add(Action.HAND_DOWN, user);
             }
-            saveLog(new Log(Action.SIGN_OUT, user));
+            logService.add(Action.SIGN_OUT, user);
         }
 
         user.setAuthorized(false);
@@ -80,9 +82,9 @@ public class UserServiceImpl implements UserService {
         saveUser(user);
 
         if (user.isRaisedHand()) {
-            saveLog(new Log(Action.HAND_UP, user));
+            logService.add(Action.HAND_UP, user);
         } else {
-            saveLog(new Log(Action.HAND_DOWN, user));
+            logService.add(Action.HAND_DOWN, user);
         }
 
         return user;
@@ -99,17 +101,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Log> getAllStudentsLogs(Long studentId) {
-        User student = userRepository.getById(studentId);
+    public void changeEmail(Long userId, String email) {
+        User user = userRepository.getById(userId);
+        user.setEmail(email);
 
-        return logRepository.getAllByUser(student);
+        saveUser(user);
     }
 
     private void saveUser(User user) {
         userRepository.save(user);
-    }
-
-    private void saveLog(Log log) {
-        logRepository.save(log);
     }
 }

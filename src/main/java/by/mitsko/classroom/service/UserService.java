@@ -1,6 +1,6 @@
 package by.mitsko.classroom.service;
 
-import by.mitsko.classroom.entity.Log;
+import by.mitsko.classroom.entity.Report;
 import by.mitsko.classroom.entity.Role;
 import by.mitsko.classroom.entity.User;
 
@@ -17,5 +17,5 @@ public interface UserService {
 
     List<User> getAllStudents();
 
-    List<Log> getAllStudentsLogs(Long studentId);
+    void changeEmail(Long userId, String email);
 }
