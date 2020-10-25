@@ -2,9 +2,12 @@ package by.mitsko.classroom.controller.utils;
 
 import by.mitsko.classroom.dto.response.LogResponseDTO;
 import by.mitsko.classroom.dto.response.UserResponseDTO;
+import by.mitsko.classroom.entity.Action;
 import by.mitsko.classroom.entity.Log;
 import by.mitsko.classroom.entity.User;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
