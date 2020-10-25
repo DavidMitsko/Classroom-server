@@ -10,7 +10,6 @@ public class UserResponseDTO {
     private boolean authorized;
     private boolean raisedHand;
     private String role;
-    private String email;
 
     public UserResponseDTO(User user) {
         this.id = user.getId();
@@ -18,6 +17,5 @@ public class UserResponseDTO {
         this.authorized = user.isAuthorized();
         this.raisedHand = user.isRaisedHand();
         this.role = user.getRole().name();
-        this.email = user.getEmail();
     }
 }
