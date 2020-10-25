@@ -1,9 +1,9 @@
 package by.mitsko.classroom.service.impl;
 
-import by.mitsko.classroom.entity.*;
+import by.mitsko.classroom.entity.Action;
+import by.mitsko.classroom.entity.Role;
+import by.mitsko.classroom.entity.User;
 import by.mitsko.classroom.exception.AccessDeniedException;
-import by.mitsko.classroom.repository.LogRepository;
-import by.mitsko.classroom.repository.ReportRepository;
 import by.mitsko.classroom.repository.UserRepository;
 import by.mitsko.classroom.service.LogService;
 import by.mitsko.classroom.service.UserService;
@@ -17,21 +17,18 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LogService logService;
-    private final ReportRepository reportRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, LogService logService,
-                           ReportRepository reportRepository) {
+    public UserServiceImpl(UserRepository userRepository, LogService logService) {
         this.userRepository = userRepository;
         this.logService = logService;
-        this.reportRepository = reportRepository;
     }
 
     @Override
     public User signIn(String username, Role role, String email) {
         Validator.validateUsername(username);
 
-        User user = userRepository.getByUsername(username);;
+        User user = userRepository.getByUsername(username);
         if (user != null) {
             if (user.isAuthorized()) {
                 throw new AccessDeniedException("This user is already authorized");

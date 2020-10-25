@@ -39,7 +39,7 @@ public class ScheduledReport {
         this.mailSender = mailSender;
     }
 
-    @Scheduled(cron = "0 0 15 ? * *")
+    @Scheduled(cron = "0 0 16 ? * *")
     public void prepareReports() {
         List<Report> reports = reportRepository.findAll();
 
