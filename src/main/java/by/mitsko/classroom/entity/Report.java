@@ -20,7 +20,7 @@ public class Report {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-    @Column
+    @Column(name = "frequency", nullable = false)
     private Frequency frequency;
 
     public Report(User recipient, Frequency frequency) {

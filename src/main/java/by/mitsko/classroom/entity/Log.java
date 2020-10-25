@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 
 @EqualsAndHashCode()
 @Table(name = "log")
@@ -18,14 +17,14 @@ public class Log {
     @Column(name = "id")
     private Long id;
 
-    @Column
+    @Column(name = "action", nullable = false)
     private Action action;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "student_id")
     private User user;
 
-    @Column
+    @Column(name = "date", nullable = false)
     private LocalDateTime date;
 
     public Log(Action action, User user) {

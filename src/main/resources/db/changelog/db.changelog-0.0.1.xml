@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1" author="mitsko">
+        <createTable tableName="users">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="raised_hand" type="BOOLEAN"/>
+            <column name="authorized" type="BOOLEAN"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="role" type="INT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="mitsko">
+        <createTable tableName="log">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="action" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="mitsko">
+        <createTable tableName="reports">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="frequency" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipient_id" type="BIGINT"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="mitsko">
+        <addForeignKeyConstraint baseTableName="log" baseColumnNames="student_id"
+                                 constraintName="fk_log_users_id" referencedTableName="users"
+                                 referencedColumnNames="id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="5" author="mitsko">
+        <addForeignKeyConstraint baseTableName="reports" baseColumnNames="recipient_id"
+                                 constraintName="fk_reports_users_id" referencedTableName="users"
+                                 referencedColumnNames="id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

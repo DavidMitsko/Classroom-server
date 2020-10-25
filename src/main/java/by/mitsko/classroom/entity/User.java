@@ -14,19 +14,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column
+    @Column(name = "raised_hand")
     private boolean raisedHand;
 
-    @Column
+    @Column(name = "authorized")
     private boolean authorized;
 
-    @Column
+    @Column(name = "email")
     private String email;
 
-    @Column
+    @Column(name = "role")
     private Role role;
 
     public User(String username, Role role) {
