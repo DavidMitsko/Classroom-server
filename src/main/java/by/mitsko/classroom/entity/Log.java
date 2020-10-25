@@ -13,7 +13,7 @@ import java.time.ZoneId;
 @Data
 public class Log {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
